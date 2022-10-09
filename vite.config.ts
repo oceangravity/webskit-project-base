@@ -11,7 +11,7 @@ export default defineConfig({
     federation({
       name: "host-app",
       remotes: {
-        webskit: "http://localhost:3344/remoteEntry.js",
+        webskit: "http://localhost:4173/remoteEntry.js",
       },
       shared: ["vue"],
     }),
