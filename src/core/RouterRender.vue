@@ -1,5 +1,5 @@
 <template>
-  <component :is="name"></component>
+  <router-view />
   <wk-tools ref="mainPLaceHolder" />
 </template>
 
@@ -9,16 +9,13 @@ import core from "./Core";
 import webskitCSS from "./webskit.css?inline";
 import type { ComponentInternalInstance } from "vue";
 import { getCurrentInstance, ref, nextTick, watch, onMounted } from "vue";
-import WkTools from "./WkTools.vue";
-import { useRoute } from "vue-router";
+import WkTools from './WkTools.vue'
+
 import { useStore } from "./store";
 const instance = getCurrentInstance();
 
 const store = useStore();
 const mainPLaceHolder = ref();
-
-const route = useRoute();
-const name = computed(() => defineAsyncComponent(() => import(String(route.query.component))));
 
 onMounted(async () => {
   const wkInstance = document.createElement("wk-instance");
@@ -27,6 +24,7 @@ onMounted(async () => {
 
   store.Context = instance as ComponentInternalInstance;
 
+  // await ComponentRegistrator.registerAll()
 
   if (HTML) {
     const shadowRoot = HTML.appendChild(wkInstance).attachShadow({ mode: "open" }).appendChild(WebsKit);
@@ -52,9 +50,9 @@ onMounted(async () => {
       let command;
 
       try {
-        command = JSON.parse(msg.data);
-      } catch (e) {
-        return;
+        command = JSON.parse(msg.data)
+      }catch (e) {
+        return
       }
 
       if (command.event === "UNDO") {
