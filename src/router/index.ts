@@ -20,7 +20,7 @@ const router = createRouter({
     {
       path: "/render",
       name: "render",
-      component: () => import("webskit/Render"),
+      component: () => import("../core/ComponentRender.vue"),
     },
   ],
 });

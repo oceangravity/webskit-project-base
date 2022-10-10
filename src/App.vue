@@ -1,32 +1,26 @@
 <script setup lang="ts">
+import { RouterLink, RouterView } from 'vue-router'
+import HelloWorld from './components/HelloWorld.vue'
+
 onMounted(async () => {
   await nextTick(() => {
     const checkReadyState = () => {
-      if (document.readyState === "complete") {
-        console.log("READY");
-        window.parent.postMessage(
-          { event: "WORKSPACE_READY", data: null },
-          "*"
-        );
-        return;
+      if (document.readyState === 'complete') {
+        console.log('READY')
+        window.parent.postMessage({event: 'WORKSPACE_READY', data: null}, '*')
+        return
       }
       window.setTimeout(checkReadyState, 100);
-    };
+    }
 
-    checkReadyState();
-  });
-});
+    checkReadyState()
+  })
+})
 </script>
 
 <template>
   <header>
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="@/assets/logo.svg"
-      width="125"
-      height="125"
-    />
+    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 
     <div class="wrapper">
       <HelloWorld msg="Caraotas Podridas" />
