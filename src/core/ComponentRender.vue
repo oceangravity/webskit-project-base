@@ -18,7 +18,7 @@ const store = useStore();
 const mainPLaceHolder = ref();
 
 const route = useRoute();
-const name = computed(() => defineAsyncComponent(() => import(String(route.query.component))));
+const name = computed(() => defineAsyncComponent(() => import(/* @vite-ignore */ String(route.query.component))));
 
 onMounted(async () => {
   const wkInstance = document.createElement("wk-instance");
@@ -26,7 +26,6 @@ onMounted(async () => {
   const HTML = document.querySelector("html");
 
   store.Context = instance as ComponentInternalInstance;
-
 
   if (HTML) {
     const shadowRoot = HTML.appendChild(wkInstance).attachShadow({ mode: "open" }).appendChild(WebsKit);
