@@ -732,7 +732,7 @@ export default class Core {
 
     await nextTick(async () => {
       this.sendMessage({
-        event: "TREE_NODES",
+        event: "TREE_NODES*",
         data: {
           $Nodes: JSON.parse(JSON.stringify(this.AppState.ComponentsDefinition[this.AppState.currentComponent].template, replacer)),
         },
@@ -763,7 +763,7 @@ export default class Core {
         await this.slotInsert(this.AppState.Elements.dropAction.element as WKElement, String(this.AppState.Elements.dropAction.targetGUID));
         await nextTick(async () => {
           this.sendMessage({
-            event: "TREE_NODES",
+            event: "TREE_NODES*",
             data: {
               $Nodes: JSON.parse(JSON.stringify(this.AppState.ComponentsDefinition[this.AppState.currentComponent].template, this.replacer)),
             },
@@ -2183,7 +2183,7 @@ export default class Core {
     await nextTick(async () => {
       await NodeUtils.flatNodes();
       this.sendMessage({
-        event: "TREE_NODES",
+        event: "TREE_NODES*",
         data: {
           $Nodes: JSON.parse(JSON.stringify(this.AppState.ComponentsDefinition[this.AppState.currentComponent].template, replacer)),
         },

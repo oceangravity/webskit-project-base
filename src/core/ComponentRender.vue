@@ -87,7 +87,7 @@ onMounted(async () => {
 
       if (command.event === "LOAD_COMPONENTS_DEFINITION") {
         store.ComponentsDefinition = JSON.parse(command.data);
-        Core.loadComponent("root");
+        Core.loadComponent("component-1");
       }
 
       if (command.event === "ALTKEY_DOWN") {
