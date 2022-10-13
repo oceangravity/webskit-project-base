@@ -83,7 +83,7 @@ declare global {
   }
 
   interface ParentNode {
-    $WebsKit: Children;
+    $wk: Children;
     isGrid?: boolean;
     isGridArea?: boolean;
   }
@@ -104,7 +104,7 @@ declare global {
     isComponent?: boolean;
     isContainer: boolean | undefined;
     isSlot: boolean | undefined;
-    $WebsKit: Children;
+    $wk: Children;
     syncsheet?: CSSStyleSheet;
     oldCSSCache?: CSSCache;
     CSSCache?: CSSCache;
@@ -145,7 +145,7 @@ declare global {
     SELECTOR_POOL?: CSSRule[];
     isContainer?: boolean | undefined;
     isSlot?: boolean | undefined;
-    $WebsKit?;
+    $wk?;
     syncsheet?: CSSStyleSheet;
     oldCSSCache?: { [p: string]: never };
     CSSCache?: { [p: string]: never };
@@ -432,6 +432,7 @@ declare global {
     component?: string;
     tag?: string;
     isContainer?: boolean;
+    isComponent?: boolean;
     props?: Props;
     SFC?: string;
     propsDefinition?: [];

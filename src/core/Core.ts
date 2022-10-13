@@ -179,7 +179,7 @@ export default class Core {
     /**
      * Check Selection Mode
      */
-    if (window.widgetFromPoint && !window.widgetFromPoint?.$WebsKit && this.AppState.Elements.selection_mode === "WK-COMPONENTS" && !window.widgetFromPoint?.tagName.startsWith("WK-")) {
+    if (window.widgetFromPoint && !window.widgetFromPoint?.$wk && this.AppState.Elements.selection_mode === "WK-COMPONENTS" && !window.widgetFromPoint?.tagName.startsWith("WK-")) {
       window.widgetFromPoint = this.getClosestParent(<WKElement>window.widgetFromPoint);
     }
 
@@ -200,10 +200,10 @@ export default class Core {
     this.overScrollEdge = this.isOverScrollEdge();
     this.setSelected(window.widgetFromPoint).then((r) => void r);
     this.AppState.Elements.lastSelected = this.AppState.Elements.selected;
-    this.AppState.Elements.originalSelected = window.widgetFromPoint?.guid;
+    this.AppState.Elements.originalSelected = window.widgetFromPoint?.$wk.guid;
     this.AppState.Elements.originalElementSelected = window.widgetFromPoint;
     this.AppState.Elements.elementSelected = window.widgetFromPoint;
-    this.AppState.Elements.selected = window.widgetFromPoint?.guid;
+    this.AppState.Elements.selected = window.widgetFromPoint?.$wk.guid;
   }
 
   async setSelected(element: WKElement | null | undefined): Promise<void> {
@@ -211,8 +211,8 @@ export default class Core {
 
     this.AppState.Elements.lastSelected = this.AppState.Elements.selected;
     this.AppState.Elements.elementSelected = element;
-    this.AppState.Elements.selected = element.guid;
-    this.sendMessage({ event: "setCurrentElement", data: element.guid });
+    this.AppState.Elements.selected = element.$wk.guid;
+    this.sendMessage({ event: "setCurrentElement", data: element.$wk.guid });
   }
 
   async Undo() {
@@ -441,7 +441,7 @@ export default class Core {
     let result = false;
     const checkIfElementExist = (element: Children[], target: WKElement) => {
       for (const item of element) {
-        if (item.guid === target.guid) {
+        if (item.guid === target.$wk.guid) {
           result = true;
           break;
         } else {
@@ -450,7 +450,7 @@ export default class Core {
       }
     };
 
-    this.AppState.Elements.dropAction.element?.$WebsKit?.children && checkIfElementExist(this.AppState.Elements.dropAction.element.$WebsKit.children, <WKElement>this.AppState.Elements.dropAction.target);
+    this.AppState.Elements.dropAction.element?.$wk?.children && checkIfElementExist(this.AppState.Elements.dropAction.element.$wk.children, <WKElement>this.AppState.Elements.dropAction.target);
 
     let siblingEvaluation = false;
 
@@ -466,11 +466,11 @@ export default class Core {
       siblingEvaluation = true;
     }
 
-    return ((this.workspaceBodyElement.contains(this.AppState.Elements.dropAction?.element as WKElement) && (this.mouseDownFromWorkspace || this.mouseDownFromTree)) || this.workspaceBodyElement.contains(target)) && !this.AppState.Elements.dropAction.element?.contains(this.AppState.Elements.dropAction.target as WKElement) && this.AppState.Elements.dropAction.element?.$WebsKit && this.AppState.Elements.dropAction.target?.$WebsKit && this.AppState.Elements.dropAction.element.$WebsKit.guid !== this.AppState.Elements.dropAction.target.$WebsKit.guid && !this.AppState.Elements.dropAction.element.contains(this.AppState.Elements.dropAction.target as WKElement) && !result && siblingEvaluation;
+    return ((this.workspaceBodyElement.contains(this.AppState.Elements.dropAction?.element as WKElement) && (this.mouseDownFromWorkspace || this.mouseDownFromTree)) || this.workspaceBodyElement.contains(target)) && !this.AppState.Elements.dropAction.element?.contains(this.AppState.Elements.dropAction.target as WKElement) && this.AppState.Elements.dropAction.element?.$wk && this.AppState.Elements.dropAction.target?.$wk && this.AppState.Elements.dropAction.element.$wk.guid !== this.AppState.Elements.dropAction.target.$wk.guid && !this.AppState.Elements.dropAction.element.contains(this.AppState.Elements.dropAction.target as WKElement) && !result && siblingEvaluation;
   }
 
   // async insertClass(element: WKElement, className: string): Promise<void> {
-  //   const wkNode = window.wkNodes[String(element.$WebsKit?.guid || "root")];
+  //   const wkNode = window.wkNodes[String(element.$wk?.guid || "root")];
   //
   //   // wkNode.props.class
   // }
@@ -495,12 +495,12 @@ export default class Core {
     let targetIndex: number;
     let elementIndex: number;
 
-    const targetParentNodeGUID = window.wkNodes[String(target.$WebsKit?.guid || "root")].parent?.guid || "root";
-    const elementParentNodeGUID = window.wkNodes[String(element.$WebsKit?.guid || "root")].parent?.guid || "root";
+    const targetParentNodeGUID = window.wkNodes[String(target.$wk?.guid || "root")].parent?.guid || "root";
+    const elementParentNodeGUID = window.wkNodes[String(element.$wk?.guid || "root")].parent?.guid || "root";
 
     if (elementParentNodeGUID === targetParentNodeGUID) {
-      const targetParentChildren = window.wkNodes[String(target.$WebsKit?.guid || "root")].parent?.children as Children[];
-      const elementParentChildren = window.wkNodes[String(element.$WebsKit?.guid || "root")].parent?.children as Children[];
+      const targetParentChildren = window.wkNodes[String(target.$wk?.guid || "root")].parent?.children as Children[];
+      const elementParentChildren = window.wkNodes[String(element.$wk?.guid || "root")].parent?.children as Children[];
       targetIndex = this.getNodeIndex(targetParentChildren, target) as number;
       elementIndex = this.getNodeIndex(elementParentChildren, element) as number;
       same = true;
@@ -511,8 +511,8 @@ export default class Core {
         (window.wkNodes[targetParentNodeGUID].children as Children[]).splice(targetIndex - 1, 0, (window.wkNodes[targetParentNodeGUID].children as Children[]).splice(elementIndex, 1)[0]);
       }
     } else {
-      const targetParentChildren = window.wkNodes[String(target.$WebsKit?.guid || "root")].parent?.children as Children[];
-      const elementParentChildren = window.wkNodes[String(element.$WebsKit?.guid || "root")].parent?.children as Children[];
+      const targetParentChildren = window.wkNodes[String(target.$wk?.guid || "root")].parent?.children as Children[];
+      const elementParentChildren = window.wkNodes[String(element.$wk?.guid || "root")].parent?.children as Children[];
       targetIndex = this.getNodeIndex(targetParentChildren, target) as number;
       elementIndex = this.getNodeIndex(elementParentChildren, element) as number;
 
@@ -557,9 +557,9 @@ export default class Core {
   }
 
   async insertIn(element: WKElement, target: WKElement): Promise<void> {
-    const elementParentNodeGUID = window.wkNodes[String(element.$WebsKit?.guid || "root")].parent?.guid || "root";
-    const targetParentNodeGUID = target.$WebsKit?.guid || "root";
-    const elementParentChildren = window.wkNodes[String(element.$WebsKit?.guid || "root")].parent?.children as Children[];
+    const elementParentNodeGUID = window.wkNodes[String(element.$wk?.guid || "root")].parent?.guid || "root";
+    const targetParentNodeGUID = target.$wk?.guid || "root";
+    const elementParentChildren = window.wkNodes[String(element.$wk?.guid || "root")].parent?.children as Children[];
     const elementIndex = this.getNodeIndex(elementParentChildren, element) as number;
 
     (window.wkNodes[targetParentNodeGUID].children as Children[]).push((window.wkNodes[elementParentNodeGUID].children as Children[]).splice(elementIndex, 1)[0]);
@@ -590,12 +590,12 @@ export default class Core {
     let targetIndex: number;
     let elementIndex: number;
 
-    const elementParentNodeGUID = window.wkNodes[String(element.$WebsKit?.guid || "root")].parent?.guid || "root";
-    const targetParentNodeGUID = window.wkNodes[String(target.$WebsKit?.guid || "root")].parent?.guid || "root";
+    const elementParentNodeGUID = window.wkNodes[String(element.$wk?.guid || "root")].parent?.guid || "root";
+    const targetParentNodeGUID = window.wkNodes[String(target.$wk?.guid || "root")].parent?.guid || "root";
 
     if (elementParentNodeGUID === targetParentNodeGUID) {
-      const targetParentChildren = window.wkNodes[String(target.$WebsKit?.guid || "root")].parent?.children as Children[];
-      const elementParentChildren = window.wkNodes[String(element.$WebsKit?.guid || "root")].parent?.children as Children[];
+      const targetParentChildren = window.wkNodes[String(target.$wk?.guid || "root")].parent?.children as Children[];
+      const elementParentChildren = window.wkNodes[String(element.$wk?.guid || "root")].parent?.children as Children[];
       targetIndex = this.getNodeIndex(targetParentChildren, target) as number;
       elementIndex = this.getNodeIndex(elementParentChildren, element) as number;
       same = true;
@@ -606,8 +606,8 @@ export default class Core {
         (window.wkNodes[targetParentNodeGUID].children as Children[]).splice(targetIndex, 0, (window.wkNodes[targetParentNodeGUID].children as Children[]).splice(elementIndex, 1)[0]);
       }
     } else {
-      const targetParentChildren = window.wkNodes[String(target.$WebsKit?.guid || "root")].parent?.children as Children[];
-      const elementParentChildren = window.wkNodes[String(element.$WebsKit?.guid || "root")].parent?.children as Children[];
+      const targetParentChildren = window.wkNodes[String(target.$wk?.guid || "root")].parent?.children as Children[];
+      const elementParentChildren = window.wkNodes[String(element.$wk?.guid || "root")].parent?.children as Children[];
       targetIndex = this.getNodeIndex(targetParentChildren, target) as number;
       elementIndex = this.getNodeIndex(elementParentChildren, element) as number;
 
@@ -652,9 +652,9 @@ export default class Core {
   }
 
   async slotInsert(element: WKElement, target: string): Promise<void> {
-    const elementParentNodeGUID = window.wkNodes[String(element.$WebsKit?.guid || "root")].parent?.guid || "root";
+    const elementParentNodeGUID = window.wkNodes[String(element.$wk?.guid || "root")].parent?.guid || "root";
     const targetParentNodeGUID = target || "root";
-    const elementParentChildren = window.wkNodes[String(element.$WebsKit?.guid || "root")].parent?.children as Children[];
+    const elementParentChildren = window.wkNodes[String(element.$wk?.guid || "root")].parent?.children as Children[];
     const elementIndex = this.getNodeIndex(elementParentChildren, element) as number;
 
     (window.wkNodes[targetParentNodeGUID].children as Children[]).push((window.wkNodes[elementParentNodeGUID].children as Children[]).splice(elementIndex, 1)[0]);
@@ -681,7 +681,7 @@ export default class Core {
   }
 
   getNodeIndex(children: Children[], element: WKElement): number {
-    return children.map((element: any) => element.guid).indexOf(element.guid);
+    return children.map((element: Children) => element.guid).indexOf(String(element.$wk.guid));
   }
 
   async manageDrop(): Promise<void> {
@@ -689,15 +689,15 @@ export default class Core {
 
     if (this.AppState.Elements.dropAction.element?.tagName === "V-SLOT") {
       const element = document.createElement("DIV") as WKElement;
-      element.$WebsKit = window.wkNodes[String(this.AppState.Elements.dropAction.element.getAttribute("data-guid"))];
-      element.guid = String(this.AppState.Elements.dropAction.element.getAttribute("data-guid"));
+      element.$wk = window.wkNodes[String(this.AppState.Elements.dropAction.element.getAttribute("data-guid"))];
+      element.$wk.guid = String(this.AppState.Elements.dropAction.element.getAttribute("data-guid"));
       this.AppState.Elements.dropAction.element = element;
     }
 
     if (this.AppState.Elements.dropAction.target?.tagName === "V-SLOT") {
       const element = document.createElement("DIV") as WKElement;
-      element.$WebsKit = window.wkNodes[String(this.AppState.Elements.dropAction.target.getAttribute("data-guid"))];
-      element.guid = String(this.AppState.Elements.dropAction.target.getAttribute("data-guid"));
+      element.$wk = window.wkNodes[String(this.AppState.Elements.dropAction.target.getAttribute("data-guid"))];
+      element.$wk.guid = String(this.AppState.Elements.dropAction.target.getAttribute("data-guid"));
       this.AppState.Elements.dropAction.target = element;
     }
 
@@ -748,15 +748,15 @@ export default class Core {
     window.lastDropAction = JSON.parse(
       JSON.stringify({
         side: this.AppState.Elements.dropAction.side,
-        target: this.AppState.Elements.dropAction.target?.$WebsKit?.guid,
-        element: this.AppState.Elements.dropAction.element?.$WebsKit?.guid,
+        target: this.AppState.Elements.dropAction.target?.$wk?.guid,
+        element: this.AppState.Elements.dropAction.element?.$wk?.guid,
       })
     );
     if (this.AppState.Elements.dragAction === "MOVING" || dragAction === "MOVING") {
       this.AppState.Elements.lastDropAction = {
         side: this.AppState.Elements.dropAction.side,
-        target: this.AppState.Elements.dropAction.target?.$WebsKit?.guid,
-        element: this.AppState.Elements.dropAction.element?.$WebsKit?.guid,
+        target: this.AppState.Elements.dropAction.target?.$wk?.guid,
+        element: this.AppState.Elements.dropAction.element?.$wk?.guid,
       };
 
       if (this.AppState.Elements.dropAction.slotInsert) {
@@ -1002,7 +1002,7 @@ export default class Core {
       const state = this.AppState.APP.mode;
       console.log("EDITING", state);
     } else if (window.widgetFromPoint && !window.widgetFromPoint.tagName.startsWith("WK-") && this.AppState.APP.mode === "MOVE") {
-      if (window.widgetFromPoint.tagName !== "BODY" && !window.widgetFromPoint.$WebsKit && this.AppState.Elements.selection_mode === "WK-COMPONENTS") {
+      if (window.widgetFromPoint.tagName !== "BODY" && !window.widgetFromPoint.$wk && this.AppState.Elements.selection_mode === "WK-COMPONENTS") {
         window.widgetFromPoint = this.getClosestParent(window.widgetFromPoint);
       }
 
@@ -1024,15 +1024,15 @@ export default class Core {
 
       this.sendMessage({
         event: "setWidgetFromPoint",
-        data: window.widgetFromPoint?.guid || "root",
+        data: window.widgetFromPoint?.$wk?.guid || "root",
       });
 
       this.TransferDropAction = {
-        target: this.AppState.Elements.dropAction.target ? this.AppState.Elements.dropAction.target.guid : "root",
-        element: this.AppState.Elements.dropAction.element ? this.AppState.Elements.dropAction.element.guid : "root",
+        target: this.AppState.Elements.dropAction.target?.$wk ? this.AppState.Elements.dropAction.target.$wk.guid : "root",
+        element: this.AppState.Elements.dropAction.element?.$wk ? this.AppState.Elements.dropAction.element.$wk.guid : "root",
         side: this.AppState.Elements.dropAction.side,
         activatePlaceHolder: this.activatePlaceHolder,
-        widgetFromPoint: window.widgetFromPoint?.guid,
+        widgetFromPoint: window.widgetFromPoint?.$wk?.guid,
       };
 
       if (this.activatePlaceHolder) {
@@ -1111,8 +1111,8 @@ export default class Core {
         this.stripePointerSelectorInfo.style.height = `${this.getRects(element).height}px`;
       }
 
-      this.AppState.Elements.elementInfo = element.tagName === "BODY" ? "Body" : element.$WebsKit ? element.$WebsKit.tag : element.tagName;
-      this.AppState.Elements.elementTag = element.tagName === "BODY" ? "Body" : element.$WebsKit ? element.$WebsKit.tag : element.tagName;
+      this.AppState.Elements.elementInfo = element.tagName === "BODY" ? "Body" : element.$wk ? element.$wk.tag : element.tagName;
+      this.AppState.Elements.elementTag = element.tagName === "BODY" ? "Body" : element.$wk ? element.$wk.tag : element.tagName;
       this.AppState.Elements.element = element;
 
       // Background
@@ -1134,7 +1134,7 @@ export default class Core {
       if (slot.props?.name) {
         const renderedComponent = this.getClosestParent(raw) as WKElement;
 
-        const slotTarget = (window.wkNodes[renderedComponent.guid].children as WKComponentTemplateNode[]).filter((item) => Object.entries(item.props as Record<string, any>).filter((prop) => prop[1] === (slot.props as Record<string, unknown>).name));
+        const slotTarget = (window.wkNodes[String(renderedComponent.$wk.guid)].children as WKComponentTemplateNode[]).filter((item) => Object.entries(item.props as Record<string, any>).filter((prop) => prop[1] === (slot.props as Record<string, unknown>).name));
 
         const slotGUID = slotTarget.filter(
           // @ts-ignore
@@ -1252,7 +1252,7 @@ export default class Core {
     this.eventPool?.TAB && (this.eventPool.TAB.nextParent = nextParent.bind(this));
 
     // debugger
-    if (target?.isComponent && !this.AppState.Elements.dropAction.element?.contains(target)) {
+    if (target?.$wk?.isComponent && !this.AppState.Elements.dropAction.element?.contains(target)) {
       if (inside.side.x === "LEFT") {
         if (inside.position.y <= targetHeightEdge(target, inside.side.y)) {
           if (target && target !== this.AppState.Elements.dropAction.element && !this.AppState.Elements.dropAction.element?.contains(target)) {
@@ -1274,16 +1274,16 @@ export default class Core {
           const slots = Array.from(target.querySelectorAll("*")).filter((node) => {
             const template = window.wkNodes[(node as WKElement).guid];
             if (template && template.parent) {
-              return (node as WKElement).isComponent || (node as WKElement).isSlot || template.parent.tag === "template";
+              return (node as WKElement).$wk?.isComponent || (node as WKElement).isSlot || template.parent.tag === "template";
             } else {
-              return (node as WKElement).isComponent || (node as WKElement).isSlot;
+              return (node as WKElement).$wk?.isComponent || (node as WKElement).isSlot;
             }
           }) as WKElement[];
           if (slots.length > 0) {
             const closest = Utils.getClosestElementByChildren(slots, this.x, this.y);
             if (closest.el) {
               target = closest.el;
-              if (target.bguid && !target.isComponent) {
+              if (target.bguid && !target.$wk?.isComponent) {
                 this.checkSlot(target);
               } else {
                 inside = Utils.calculatePosition({
@@ -1322,16 +1322,16 @@ export default class Core {
           const slots = Array.from(target.querySelectorAll("*")).filter((node) => {
             const template = window.wkNodes[(node as WKElement).guid];
             if (template && template.parent) {
-              return (node as WKElement).isComponent || (node as WKElement).isSlot || template.parent.tag === "template";
+              return (node as WKElement).$wk?.isComponent || (node as WKElement).isSlot || template.parent.tag === "template";
             } else {
-              return (node as WKElement).isComponent || (node as WKElement).isSlot;
+              return (node as WKElement).$wk?.isComponent || (node as WKElement).isSlot;
             }
           }) as WKElement[];
           if (slots.length > 0) {
             const closest = Utils.getClosestElementByChildren(slots, this.x, this.y);
             if (closest.el) {
               target = closest.el;
-              if (target.bguid && !target.isComponent) {
+              if (target.bguid && !target.$wk?.isComponent) {
                 this.checkSlot(target);
               } else {
                 inside = Utils.calculatePosition({
@@ -1354,7 +1354,7 @@ export default class Core {
       if (!this.forcedParent) {
         this.checkSlot(target);
       }
-    } else if (target?.$WebsKit) {
+    } else if (target?.$wk) {
       if (inside.side.x === "LEFT") {
         if (inside.position.y <= targetHeightEdge(target, inside.side.y)) {
           if (target && target !== this.AppState.Elements.dropAction.element && !this.AppState.Elements.dropAction.element?.contains(target)) {
@@ -1373,10 +1373,10 @@ export default class Core {
             }
           }
         } else {
-          if ((target?.tagName === "BODY" || (target?.isContainer && !this.forcedParent)) && target !== this.AppState.Elements.dropAction.element && !this.AppState.Elements.dropAction.element?.contains(target)) {
+          if ((target?.tagName === "BODY" || (target?.$wk.isContainer && !this.forcedParent)) && target !== this.AppState.Elements.dropAction.element && !this.AppState.Elements.dropAction.element?.contains(target)) {
             if (target.querySelectorAll("*").length > 0) {
               const closest = Utils.getClosestElement(target, this.x, this.y);
-              if (closest.el && closest.el.$WebsKit) {
+              if (closest.el && closest.el.$wk) {
                 target = closest.el;
                 inside = Utils.calculatePosition({
                   target: target,
@@ -1419,10 +1419,10 @@ export default class Core {
             }
           }
         } else {
-          if ((target?.tagName === "BODY" || (target?.isContainer && !this.forcedParent)) && target !== this.AppState.Elements.dropAction.element && !this.AppState.Elements.dropAction.element?.contains(target)) {
+          if ((target?.tagName === "BODY" || (target?.$wk.isContainer && !this.forcedParent)) && target !== this.AppState.Elements.dropAction.element && !this.AppState.Elements.dropAction.element?.contains(target)) {
             if (target.querySelectorAll("*").length > 0) {
               const closest = Utils.getClosestElement(target, this.x, this.y);
-              if (closest.el && closest.el.$WebsKit) {
+              if (closest.el && closest.el.$wk) {
                 target = closest.el;
                 inside = Utils.calculatePosition({
                   target: target,
@@ -1453,7 +1453,7 @@ export default class Core {
     if (target?.tagName === "BODY") {
       if (target.querySelectorAll("*").length > 0) {
         const closest = Utils.getClosestElement(target, this.x, this.y);
-        if (closest.el && closest.el.$WebsKit) {
+        if (closest.el && closest.el.$wk) {
           target = closest.el;
           inside = Utils.calculatePosition({
             target: target,
@@ -1475,12 +1475,12 @@ export default class Core {
     this.AppState.Elements.dropAction.target = target;
 
     this.dropActionJSON.side = JSON.stringify(this.AppState.Elements.dropAction.side);
-    this.dropActionJSON.el = target?.guid || 0;
+    this.dropActionJSON.el = target?.$wk?.guid || 0;
 
     const info = {
       onHoverElement: originalTarget,
       element: this.AppState.Elements.dropAction.target?.tagName,
-      guid: this.AppState.Elements.dropAction.target?.guid,
+      guid: this.AppState.Elements.dropAction.target?.$wk?.guid,
       side: this.AppState.Elements.dropAction.side,
     };
 
@@ -1594,7 +1594,7 @@ export default class Core {
 
     // debugger
 
-    if (target?.isComponent && !this.AppState.Elements.dropAction.element?.contains(target)) {
+    if (target?.$wk?.isComponent && !this.AppState.Elements.dropAction.element?.contains(target)) {
       if (inside.side.x === "LEFT") {
         if (inside.position.y <= targetHeightEdge(target, inside.side.y)) {
           if (target && target !== this.AppState.Elements.dropAction.element && !this.AppState.Elements.dropAction.element?.contains(target)) {
@@ -1614,18 +1614,18 @@ export default class Core {
           }
         } else {
           const slots = Array.from(target.querySelectorAll("*")).filter((node) => {
-            const template = window.wkNodes[(node as WKElement).guid];
+            const template = window.wkNodes[String((node as WKElement).$wk.guid)];
             if (template && template.parent) {
-              return (node as WKElement).isComponent || (node as WKElement).isSlot || template.parent.tag === "template";
+              return (node as WKElement).$wk?.isComponent || (node as WKElement).isSlot || template.parent.tag === "template";
             } else {
-              return (node as WKElement).isComponent || (node as WKElement).isSlot;
+              return (node as WKElement).$wk?.isComponent || (node as WKElement).isSlot;
             }
           }) as WKElement[];
           if (slots.length > 0) {
             const closest = Utils.getClosestElementByChildren(slots, this.x, this.y);
             if (closest.el) {
               target = closest.el;
-              if (target.bguid && !target.isComponent) {
+              if (target.bguid && !target.$wk?.isComponent) {
                 this.checkSlot(target);
               } else {
                 inside = Utils.calculatePosition({
@@ -1662,18 +1662,18 @@ export default class Core {
           }
         } else {
           const slots = Array.from(target.querySelectorAll("*")).filter((node) => {
-            const template = window.wkNodes[(node as WKElement).guid];
+            const template = window.wkNodes[String((node as WKElement).$wk.guid)];
             if (template && template.parent) {
-              return (node as WKElement).isComponent || (node as WKElement).isSlot || template.parent.tag === "template";
+              return (node as WKElement).$wk?.isComponent || (node as WKElement).isSlot || template.parent.tag === "template";
             } else {
-              return (node as WKElement).isComponent || (node as WKElement).isSlot;
+              return (node as WKElement).$wk?.isComponent || (node as WKElement).isSlot;
             }
           }) as WKElement[];
           if (slots.length > 0) {
             const closest = Utils.getClosestElementByChildren(slots, this.x, this.y);
             if (closest.el) {
               target = closest.el;
-              if (target.bguid && !target.isComponent) {
+              if (target.bguid && !target.$wk?.isComponent) {
                 this.checkSlot(target);
               } else {
                 inside = Utils.calculatePosition({
@@ -1696,7 +1696,7 @@ export default class Core {
       if (!this.forcedParent) {
         this.checkSlot(target);
       }
-    } else if (target?.$WebsKit) {
+    } else if (target?.$wk) {
       if (inside.side.x === "LEFT") {
         if (inside.position.y <= targetHeightEdge(target, inside.side.y)) {
           if (target && target !== this.AppState.Elements.dropAction.element && !this.AppState.Elements.dropAction.element?.contains(target)) {
@@ -1715,10 +1715,10 @@ export default class Core {
             }
           }
         } else {
-          if ((target?.tagName === "BODY" || (target?.isContainer && !this.forcedParent)) && target !== this.AppState.Elements.dropAction.element && !this.AppState.Elements.dropAction.element?.contains(target)) {
+          if ((target?.tagName === "BODY" || (target?.$wk.isContainer && !this.forcedParent)) && target !== this.AppState.Elements.dropAction.element && !this.AppState.Elements.dropAction.element?.contains(target)) {
             if (target.querySelectorAll("*").length > 0) {
               const closest = Utils.getClosestElement(target, this.x, this.y);
-              if (closest.el && closest.el.$WebsKit) {
+              if (closest.el && closest.el.$wk) {
                 target = closest.el;
                 inside = Utils.calculatePosition({
                   target: target,
@@ -1761,10 +1761,10 @@ export default class Core {
             }
           }
         } else {
-          if ((target?.tagName === "BODY" || (target?.isContainer && !this.forcedParent)) && target !== this.AppState.Elements.dropAction.element && !this.AppState.Elements.dropAction.element?.contains(target)) {
+          if ((target?.tagName === "BODY" || (target?.$wk.isContainer && !this.forcedParent)) && target !== this.AppState.Elements.dropAction.element && !this.AppState.Elements.dropAction.element?.contains(target)) {
             if (target.querySelectorAll("*").length > 0) {
               const closest = Utils.getClosestElement(target, this.x, this.y);
-              if (closest.el && closest.el.$WebsKit) {
+              if (closest.el && closest.el.$wk) {
                 target = closest.el;
                 inside = Utils.calculatePosition({
                   target: target,
@@ -1795,12 +1795,12 @@ export default class Core {
     this.AppState.Elements.dropAction.target = target;
 
     this.dropActionJSON.side = JSON.stringify(this.AppState.Elements.dropAction.side);
-    this.dropActionJSON.el = target?.guid || 0;
+    this.dropActionJSON.el = target?.$wk.guid || 0;
 
     const info = {
       onHoverElement: originalTarget,
       element: this.AppState.Elements.dropAction.target?.tagName,
-      guid: this.AppState.Elements.dropAction.target?.guid,
+      guid: this.AppState.Elements.dropAction.target?.$wk.guid,
       side: this.AppState.Elements.dropAction.side,
     };
 
@@ -1817,7 +1817,7 @@ export default class Core {
     if (!element) return undefined;
     while (<WKElement>element.parentNode) {
       element = <WKElement>element.parentNode;
-      if ((<WKElement>element).$WebsKit) return <WKElement>element;
+      if ((<WKElement>element).$wk) return <WKElement>element;
     }
     return document.body as WKElement;
   }
@@ -1826,7 +1826,7 @@ export default class Core {
     if (!element) return undefined;
     while (<WKElement>element.parentNode) {
       element = <WKElement>element.parentNode;
-      if ((<WKElement>element).isComponent) return <WKElement>element;
+      if ((<WKElement>element)?.$wk?.isComponent) return <WKElement>element;
     }
     return document.body as WKElement;
   }
@@ -1969,9 +1969,9 @@ export default class Core {
       target = this.workspaceBodyElement;
     }
 
-    if (target && target.$WebsKit) {
-      const width = target.nodeType === 3 || target.$WebsKit.type === "text" ? rects.width : Math.ceil(target.offsetWidth + parseFloat(getComputedStyle(target).marginLeft) + parseFloat(getComputedStyle(target).marginRight));
-      const height = target.nodeType === 3 || target.$WebsKit.type === "text" ? rects.height : Math.ceil(target.offsetHeight + parseFloat(getComputedStyle(target).marginTop) + parseFloat(getComputedStyle(target).marginBottom));
+    if (target && target.$wk) {
+      const width = target.nodeType === 3 || target.$wk.type === "text" ? rects.width : Math.ceil(target.offsetWidth + parseFloat(getComputedStyle(target).marginLeft) + parseFloat(getComputedStyle(target).marginRight));
+      const height = target.nodeType === 3 || target.$wk.type === "text" ? rects.height : Math.ceil(target.offsetHeight + parseFloat(getComputedStyle(target).marginTop) + parseFloat(getComputedStyle(target).marginBottom));
       const top = this.getRects(target).originalTop - this.workspaceBodyElement.getBoundingClientRect().top - parseFloat(getComputedStyle(target).marginTop);
       const left = this.getRects(target).originalLeft - this.workspaceBodyElement.getBoundingClientRect().left - parseFloat(getComputedStyle(target).marginLeft);
 
@@ -2172,23 +2172,8 @@ export default class Core {
     // await ComponentRegistrator.registerAll()
     this.UndoManager.clear();
 
-    function replacer(name: string, val: unknown) {
-      if (name === "DOMElement" || name === "parent") {
-        return undefined;
-      } else {
-        return val;
-      }
-    }
-
     await nextTick(async () => {
       await NodeUtils.flatNodes();
-      this.sendMessage({
-        event: "TREE_NODES*",
-        data: {
-          $Nodes: JSON.parse(JSON.stringify(this.AppState.ComponentsDefinition[this.AppState.currentComponent].template, replacer)),
-        },
-      });
-      window.wkNodes[this.AppState.ComponentsDefinition[this.AppState.currentComponent].template.guid].DOMElement = document.body as WKElement;
     });
   }
 }
