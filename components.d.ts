@@ -7,13 +7,9 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    ComponentRender: typeof import('./src/core/ComponentRender.vue')['default']
     Main: typeof import('./src/views/Main.vue')['default']
     Render: typeof import('./src/views/Render.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
-    RouterRender: typeof import('./src/core/RouterRender.vue')['default']
     RouterView: typeof import('vue-router')['RouterView']
-    WkTool: typeof import('./src/core/wk-tool.vue')['default']
-    WkTools: typeof import('./src/core/WkTools.vue')['default']
   }
 }
