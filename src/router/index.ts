@@ -1,3 +1,4 @@
+import {useCounterStore} from "@/stores/counter";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -13,7 +14,7 @@ const router = createRouter({
     {
       path: "/render",
       name: "render",
-      component: () => import("../core/ComponentRender.vue"),
+      component: () => import("../views/Render.vue"),
     },
   ],
 });
